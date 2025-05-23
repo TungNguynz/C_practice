@@ -1,65 +1,27 @@
-#include<stdio.h>
-typedef struct {
-	char light;
-	char fan;
-	char motor;
-}smartHome_t;
-
-const char* data = "light:on,fan:off,motor:off";
-
-
-smartHome_t pair_data(const char* data) {
-	smartHome_t result = { 0 };
-	char item[10];   
-	char status[10] = "0"; 
-	int i = 0;
-	int j = 0;
-	int k = 0;
-	while (data[i] != '\0') {
-		j = 0;
-		while (data[i] != ':'  && data[i] != '\0') {
-			item[j++] = data[i++];
-		}
-		j = 0;
-		if (data[i] == ':') {
-			i++;
-		}
-		while (data[i] != ':' && data[i] != '\0') {
-			status[j++] = data[i++];
-		}
-		if (data[i] == ',') {
-			i++;
-		}
-		k++;
-		switch (k) {
-		case 1:
-			if (status[1] == 'n') {
-				result.light = 1;
-			} else result.light = 0;
-			break;
-		case 2:
-			if (status[1] == 'n') {
-				result.fan = 1;
-			}
-			else result.fan = 0;
-			break;
-		case 3:
-			if (status[1] == 'n') {
-				result.motor = 1;
-			}
-			else result.motor = 0;
-			break;
-		}
-	}
-	return result;
-}
-
-int main()
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+typedef union
 {
-	smartHome_t x = pair_data(data);
-	printf("Light: %d\n", x.light); 
-	printf("Fan: %d\n", x.fan);     
-	printf("Motor: %d\n", x.motor); 
-	return 0;
+	unsigned short gia_tri;
+	struct {
+		unsigned char bit_thap;
+		unsigned char bit_cao;
+	};
+}union_t;
+unsigned char tach_bit(union_t a, unsigned short gia_tri, int vi_tri) {
+	a.gia_tri = gia_tri;
+	unsigned char low = a.bit_thap;
+	unsigned char high = a.bit_cao;
+	if (vi_tri == 0) {
+		return low;
+	}
+	else return high;
 }
-
+void main()
+{
+	union_t x;
+	printf("hay nhap gia tri 16 bit: ");
+	scanf("%hu", &x.gia_tri);
+	printf("bit cao la %#x\n", tach_bit(x, x.gia_tri, 1));
+	printf("bit thap la %#x\n", tach_bit(x, x.gia_tri, 0));
+}
